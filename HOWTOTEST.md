@@ -23,11 +23,11 @@ Fail: blank output or timeout — check DB exists and no import errors.
 
 ```bash
 .venv/bin/mcp dev \
-  src/caseware_documents_mcp/server/mcp_server.py:server \
+  src/caseware_documents_mcp/server/fast_mcp_server.py:mcp \
   --with-editable .
 ```
 
-Opens `http://localhost:5173`. Click each tool, fill params, inspect responses.  
+Opens `http://localhost:6274`. Click each tool, fill params, inspect responses.  
 Best for exploratory testing — no JSON-RPC knowledge needed.
 
 ---

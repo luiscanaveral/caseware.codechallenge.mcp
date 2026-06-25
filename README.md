@@ -1,4 +1,4 @@
-# Caseware Procurement Document MCP Server
+# Caseware Document MCP Server
 
 MCP server over a procurement and inventory knowledge base. Ingests invoices, purchase orders, shipping orders, inventory reports, and contracts, then exposes structured (SQL) and semantic (vector) retrieval via MCP tools for AI agents.
 
@@ -8,8 +8,8 @@ MCP server over a procurement and inventory knowledge base. Ingests invoices, pu
 Documents              Pipeline                Storage              MCP Server
 ─────────              ────────                ───────              ──────────
 invoices/        ──▶  ingest.py  ──▶  SQLite                search_documents
-purchase_orders/ ──▶  extract.py ──▶  ChromaDB  ──▶  stdio ──▶ get_related_documents
-shipping_orders/ ──▶  embed.py                      server    find_order_evidence
+purchase_orders/ ──▶  extract.py ──▶         ──▶  stdio ──▶ get_related_documents
+shipping_orders/ ──▶  embed.py                       server    find_order_evidence
 inventory_reports──▶  index.py                                answer_question
 contracts/       ──▶
 ```
@@ -39,7 +39,7 @@ cd caseware.mcp-codechallege
 pip install -e .
 
 # Run full pipeline + start MCP server
-python -m src.caseware_documents_mcp.main
+caseware-mcp
 
 # Or with task (recommended)
 task install
@@ -53,7 +53,6 @@ task
 | `pymupdf` | PDF text extraction |
 | `pytesseract` + `pillow` | OCR for scanned/image documents |
 | `sentence-transformers` | Local embeddings (`all-MiniLM-L6-v2`) |
-| `chromadb` | Vector storage and similarity search |
 | `pydantic` | Data models and validation |
 | `mcp` | MCP protocol server (stdio transport) |
 | `ollama` | LLM inference for grounded answer generation |
@@ -66,9 +65,9 @@ Documents live in `data/` organized by type:
 
 ```
 data/
-├── invoices/             10 PDFs + 4 JPGs
-├── purchase_orders/       9 PDFs
-├── shipping_orders/      14 PDFs
+├── invoices/             8 PDFs + 5 JPGs
+├── purchase_orders/       8 PDFs
+├── shipping_orders/      16 PDFs
 ├── inventory_reports/     7 PDFs
 └── contracts/             1 PDF (71 pages)
 ```
@@ -93,13 +92,13 @@ The pipeline auto-detects format: PDFs via PyMuPDF, images via Tesseract OCR.
 
 ```bash
 # Full run
-python -m src.caseware_documents_mcp.main
+caseware-mcp
 
 # Pipeline only (no server)
-python -m src.caseware_documents_mcp.main --pipeline-only
+caseware-mcp --pipeline-only
 
 # Skip indexing (if already indexed)
-python -m src.caseware_documents_mcp.main --skip-pipeline
+caseware-mcp --skip-pipeline
 ```
 
 ### MCP Tools
@@ -146,7 +145,7 @@ src/caseware_documents_mcp/
 
 ## Design Decisions
 
-- **SQLite + ChromaDB** over a single vector store — procurement data is fundamentally relational; vector search alone misses invoice↔PO↔shipment links
+- **SQLite** as the single store — procurement data is fundamentally relational; vector search alone misses invoice↔PO↔shipment links. Embeddings are stored alongside structured data in the same SQLite database.
 - **Regex extraction** over LLM-based parsing — the documents follow predictable templates (Northwind-style); regex is faster, cheaper, and more reliable
 - **sentence-transformers** for local embeddings — no API calls needed; `all-MiniLM-L6-v2` is 80MB and runs on CPU
 - **Ollama** for answer generation — keeps everything local; `llama3.2` provides good results for summarization and reasoning
