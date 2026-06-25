@@ -1,0 +1,66 @@
+version: "3"
+
+vars:
+  PYTHON: python3
+  SRC: src.caseware_documents_mcp
+  VENV_DIR: .venv
+  VENV_BIN: "{{.VENV_DIR}}/bin"
+
+tasks:
+  default:
+    desc: Run full pipeline and start MCP server
+    deps: [ensure-venv]
+    cmds:
+      - "{{.VENV_BIN}}/python -m {{.SRC}}.main"
+
+  pipeline:
+    desc: Run ingestion/extraction/indexing only
+    deps: [ensure-venv]
+    cmds:
+      - "{{.VENV_BIN}}/python -m {{.SRC}}.main --pipeline-only"
+
+  server:
+    desc: Start MCP server (skip pipeline)
+    deps: [ensure-venv]
+    cmds:
+      - "{{.VENV_BIN}}/python -m {{.SRC}}.main --skip-pipeline"
+
+  install:
+    desc: Install package and dependencies into venv
+    deps: [ensure-venv]
+    cmds:
+      - "{{.VENV_BIN}}/pip install -e ."
+
+  venv:
+    desc: Create virtual environment
+    cmds:
+      - "{{.PYTHON}} -m venv {{.VENV_DIR}}"
+    status:
+      - test -d {{.VENV_DIR}}
+
+  ensure-venv:
+    desc: Ensure virtual environment exists
+    cmds:
+      - "{{.PYTHON}} -m venv {{.VENV_DIR}}"
+    status:
+      - test -f {{.VENV_BIN}}/python
+
+  clean:
+    desc: Remove generated storage and virtual environment
+    cmds:
+      - rm -rf storage/
+      - rm -rf {{.VENV_DIR}}/
+
+  test:
+    desc: Smoke test - list MCP tools
+    deps: [ensure-venv]
+    cmds:
+      - >
+        printf '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}\n{"jsonrpc":"2.0","method":"notifications/initialized","params":{}}\n{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}\n'
+        | {{.VENV_BIN}}/python -m {{.SRC}}.main --skip-pipeline 2>/dev/null
+
+  db:
+    desc: Show document counts in SQLite
+    deps: [ensure-venv]
+    cmds:
+      - "{{.VENV_BIN}}/python -c \"from {{.SRC}}.db.schema import get_connection; conn = get_connection(); [print(f'  {t[0]}: {t[1]}') for t in [(table, conn.execute(f'SELECT COUNT(*) FROM {table}').fetchone()[0]) for table in ['documents','invoices','purchase_orders','shipping_orders','inventory_reports','contracts','document_chunks']]]; conn.close()\""
