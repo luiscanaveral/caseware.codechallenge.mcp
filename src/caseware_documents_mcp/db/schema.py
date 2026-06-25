@@ -16,7 +16,7 @@ def init_db():
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS documents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            filename TEXT NOT NULL,
+            filename TEXT NOT NULL UNIQUE,
             document_type TEXT NOT NULL,
             raw_text TEXT NOT NULL,
             ocr_used INTEGER DEFAULT 0,

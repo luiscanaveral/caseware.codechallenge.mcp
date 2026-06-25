@@ -60,11 +60,12 @@ def ingest_all() -> list[Document]:
                 page_count=page_count,
             )
 
-            cursor = conn.execute(
-                "INSERT INTO documents (filename, document_type, raw_text, ocr_used, page_count) VALUES (?, ?, ?, ?, ?)",
+            conn.execute(
+                "INSERT OR IGNORE INTO documents (filename, document_type, raw_text, ocr_used, page_count) VALUES (?, ?, ?, ?, ?)",
                 (doc.filename, doc.document_type, doc.raw_text, int(doc.ocr_used), doc.page_count),
             )
-            doc.id = cursor.lastrowid
+            row = conn.execute("SELECT id FROM documents WHERE filename = ?", (doc.filename,)).fetchone()
+            doc.id = row["id"]
             documents.append(doc)
 
     conn.commit()

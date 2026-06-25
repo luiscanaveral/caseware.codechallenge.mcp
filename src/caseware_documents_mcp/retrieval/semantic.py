@@ -15,6 +15,15 @@ def get_model():
     return _model
 
 
+def _token_overlap(query: str, text: str) -> float:
+    q_tokens = set(query.lower().split())
+    d_tokens = set(text.lower().split())
+    if not q_tokens or not d_tokens:
+        return 0.0
+    inter = len(q_tokens & d_tokens)
+    return inter / (len(q_tokens) + len(d_tokens) - inter)
+
+
 def semantic_search(query: str, doc_type: str | None = None, top_k: int | None = None) -> list[dict]:
     top_k = top_k or settings.SEMANTIC_TOP_K
     model = get_model()
@@ -37,20 +46,27 @@ def semantic_search(query: str, doc_type: str | None = None, top_k: int | None =
 
     query_norm = query_emb / np.linalg.norm(query_emb)
     chunk_norms = chunk_embs / np.linalg.norm(chunk_embs, axis=1, keepdims=True)
-    scores = chunk_norms @ query_norm
+    cosine_scores = chunk_norms @ query_norm
 
-    top_indices = np.argsort(scores)[::-1][:top_k]
+    overlap_scores = np.array([_token_overlap(query, r["text"]) for r in chunk_rows])
+    scores = settings.COSINE_WEIGHT * cosine_scores + (1 - settings.COSINE_WEIGHT) * overlap_scores
 
+    all_indices = np.argsort(scores)[::-1]
+
+    seen_docs = set()
     results = []
-    for idx in top_indices:
+    for idx in all_indices:
         if scores[idx] < settings.COSINE_THRESHOLD:
             continue
         chunk = chunk_rows[idx]
+        if chunk["document_id"] in seen_docs:
+            continue
         doc = get_document_by_id(chunk["document_id"])
         if not doc:
             continue
         if doc_type and doc["document_type"] != doc_type:
             continue
+        seen_docs.add(chunk["document_id"])
         results.append({
             "chunk_id": chunk["id"],
             "text": chunk["text"][:settings.TEXT_TRUNCATE],
@@ -59,6 +75,8 @@ def semantic_search(query: str, doc_type: str | None = None, top_k: int | None =
             "file": doc["filename"],
             "document_type": doc["document_type"],
         })
+        if len(results) >= top_k:
+            break
 
     conn.close()
     return results

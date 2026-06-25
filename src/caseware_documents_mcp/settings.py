@@ -64,6 +64,7 @@ TEXT_TRUNCATE = _get_int("TEXT_TRUNCATE", 500)
 SEMANTIC_TOP_K = _get_int("SEMANTIC_TOP_K", 10)
 DEFAULT_SEARCH_LIMIT = _get_int("DEFAULT_SEARCH_LIMIT", 20)
 COSINE_THRESHOLD = _get_float("COSINE_THRESHOLD", 0.1)
+COSINE_WEIGHT = _get_float("COSINE_WEIGHT", 0.7)
 
 # ── LLM ────────────────────────────────────────────────────────────
 LLM_TEMPERATURE = _get_float("LLM_TEMPERATURE", 0.1)
