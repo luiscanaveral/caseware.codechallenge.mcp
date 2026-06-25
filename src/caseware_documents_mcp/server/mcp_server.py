@@ -6,12 +6,12 @@ from mcp.types import (
     Tool,
 )
 
-from .. import settings
-from ..db.schema import get_connection
-from ..db.queries import search_structured, get_related_to_po
-from ..retrieval.classifier import classify_question
-from ..retrieval.structured import answer_structured
-from ..retrieval.semantic import semantic_search, get_chunks_for_document
+from caseware_documents_mcp import settings
+from caseware_documents_mcp.db.schema import get_connection
+from caseware_documents_mcp.db.queries import search_structured, get_related_to_po
+from caseware_documents_mcp.retrieval.classifier import classify_question
+from caseware_documents_mcp.retrieval.structured import answer_structured
+from caseware_documents_mcp.retrieval.semantic import semantic_search, get_chunks_for_document
 
 logger = logging.getLogger("caseware-mcp")
 
@@ -154,7 +154,7 @@ async def handle_search(args: dict) -> list[TextContent]:
 async def handle_get_related(args: dict) -> list[TextContent]:
     doc_id = args["document_id"]
 
-    from ..db.queries import get_document_by_id
+    from caseware_documents_mcp.db.queries import get_document_by_id
     doc = get_document_by_id(doc_id)
     if not doc:
         return [TextContent(type="text", text=f"Document with ID {doc_id} not found.")]

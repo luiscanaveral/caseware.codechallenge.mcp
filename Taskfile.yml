@@ -51,16 +51,30 @@ tasks:
       - rm -rf storage/
       - rm -rf {{.VENV_DIR}}/
 
-  test:
+  mcp:explore:
+    desc: Launch MCP Inspector with FastMCP server for interactive testing
+    deps: [ensure-venv]
+    cmds:
+      - "{{.VENV_BIN}}/mcp dev src/caseware_documents_mcp/server/fast_mcp_server.py:mcp --with-editable ."
+  mcp:smoke-test:
     desc: Smoke test - list MCP tools
     deps: [ensure-venv]
     cmds:
       - >
         printf '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}\n{"jsonrpc":"2.0","method":"notifications/initialized","params":{}}\n{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}\n'
         | {{.VENV_BIN}}/python -m {{.SRC}}.main --skip-pipeline 2>/dev/null
-
+  python:test:
+    desc: Run Unit Tests
+    deps: [ensure-venv]
+    cmds:
+      - "{{.VENV_BIN}}/python -m pytest tests/ -v" 
+  evaluate:
+    desc: Run retrieval evaluation against QA pairs
+    deps: [ensure-venv]
+    cmds:
+      - "{{.VENV_BIN}}/python -m {{.SRC}}.scripts.evaluate"
   db:
     desc: Show document counts in SQLite
     deps: [ensure-venv]
     cmds:
-      - "{{.VENV_BIN}}/python -c \"from {{.SRC}}.db.schema import get_connection; conn = get_connection(); [print(f'  {t[0]}: {t[1]}') for t in [(table, conn.execute(f'SELECT COUNT(*) FROM {table}').fetchone()[0]) for table in ['documents','invoices','purchase_orders','shipping_orders','inventory_reports','contracts','document_chunks']]]; conn.close()\""
+      - "{{.VENV_BIN}}/python -m {{.SRC}}.scripts.test_db"

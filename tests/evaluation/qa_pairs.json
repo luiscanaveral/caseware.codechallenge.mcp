@@ -1,0 +1,107 @@
+[
+  {
+    "question": "Harris-Green seller what invoice number",
+    "expected_document_type": "invoice",
+    "expected_filename": "batch1-1486.jpg"
+  },
+  {
+    "question": "How many marble coffee tables were ordered on the invoice from Harris-Green",
+    "expected_document_type": "invoice",
+    "expected_filename": "batch1-1486.jpg"
+  },
+  {
+    "question": "What is the invoice number for Paul Henriot",
+    "expected_document_type": "invoice",
+    "expected_filename": "invoice_10248.pdf"
+  },
+  {
+    "question": "Total price for Roland Mendel invoice",
+    "expected_document_type": "invoice",
+    "expected_filename": "invoice_10603.pdf"
+  },
+  {
+    "question": "What products are in purchase order 10248",
+    "expected_document_type": "purchase_order",
+    "expected_filename": "purchase_orders_10248.pdf"
+  },
+  {
+    "question": "Who placed purchase order 10382",
+    "expected_document_type": "purchase_order",
+    "expected_filename": "purchase_orders_10382.pdf"
+  },
+  {
+    "question": "Customer name for purchase order 10603",
+    "expected_document_type": "purchase_order",
+    "expected_filename": "purchase_orders_10603.pdf"
+  },
+  {
+    "question": "Queso Cabrales quantity in purchase order 10248",
+    "expected_document_type": "purchase_order",
+    "expected_filename": "purchase_orders_10248.pdf"
+  },
+  {
+    "question": "What is the shipping address for order 10248",
+    "expected_document_type": "shipping_order",
+    "expected_filename": "order_10248.pdf"
+  },
+  {
+    "question": "When was order 10382 shipped",
+    "expected_document_type": "shipping_order",
+    "expected_filename": "order_10382.pdf"
+  },
+  {
+    "question": "What shipper was used for order 10687",
+    "expected_document_type": "shipping_order",
+    "expected_filename": "order_10687.pdf"
+  },
+  {
+    "question": "Shipped date for order 10603",
+    "expected_document_type": "shipping_order",
+    "expected_filename": "order_10603.pdf"
+  },
+  {
+    "question": "How many units of Boston Crab Meat were in stock",
+    "expected_document_type": "inventory_report",
+    "expected_filename": "StockReport_2016-07_8.pdf"
+  },
+  {
+    "question": "Stock level of Inlagd Sill in July 2016",
+    "expected_document_type": "inventory_report",
+    "expected_filename": "StockReport_2016-07_8.pdf"
+  },
+  {
+    "question": "What was the stock report for seafood in 2016-12",
+    "expected_document_type": "inventory_report",
+    "expected_filename": "StockReport_2016-12_1.pdf"
+  },
+  {
+    "question": "What is the master contract called",
+    "expected_document_type": "contract",
+    "expected_filename": "totalenergies_master-contract-for-supply-of-goods-and-or-services-otgts-20231231_2024_en_pdf.pdf"
+  },
+  {
+    "question": "Who are the parties in the TotalEnergies master contract",
+    "expected_document_type": "contract",
+    "expected_filename": "totalenergies_master-contract-for-supply-of-goods-and-or-services-otgts-20231231_2024_en_pdf.pdf"
+  },
+  {
+    "question": "What does Force Majeure mean in the contract",
+    "expected_document_type": "contract",
+    "expected_filename": "totalenergies_master-contract-for-supply-of-goods-and-or-services-otgts-20231231_2024_en_pdf.pdf"
+  },
+  {
+    "question": "Which invoices are missing a purchase order",
+    "structured": true,
+    "expected_answer_pattern": "missing"
+  },
+  {
+    "question": "Find all documents related to order 10687",
+    "structured": true,
+    "expected_answer_pattern": "10687"
+  },
+  {
+    "question": "Show me all invoices for Roland Mendel",
+    "structured": true,
+    "expected_answer_pattern": "Roland Mendel"
+  }
+]
