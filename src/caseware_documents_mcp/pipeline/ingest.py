@@ -5,6 +5,19 @@ import fitz
 from PIL import Image
 import pytesseract
 
+# ── pytesseract bug workaround ──────────────────────────────────────────────
+# pytesseract's get_errors() crashes with UnicodeDecodeError when Tesseract
+# emits non-UTF-8 bytes to stderr. Monkey-patch to use errors='replace'.
+from pytesseract import pytesseract as _pytesseract_mod
+_orig_get_errors = _pytesseract_mod.get_errors
+def _safe_get_errors(error_string):
+    try:
+        return _orig_get_errors(error_string)
+    except UnicodeDecodeError:
+        return error_string.decode("utf-8", errors="replace")
+_pytesseract_mod.get_errors = _safe_get_errors
+# ────────────────────────────────────────────────────────────────────────────
+
 from .. import settings
 from ..models import Document
 from ..db.schema import get_connection

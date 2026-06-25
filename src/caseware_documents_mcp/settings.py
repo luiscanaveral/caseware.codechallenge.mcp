@@ -47,9 +47,15 @@ def _get_set(key: str, default: str) -> set[str]:
 
 
 # ── Paths ──────────────────────────────────────────────────────────
-DATA_DIR = _get("DATA_DIR", "data")
-DB_PATH = _get("DB_PATH", "storage/sqlite.db")
-CHROMA_PATH = _get("CHROMA_PATH", "storage/chroma")
+_PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+def _resolve_path(value: str) -> str:
+    p = Path(value)
+    return str(p.resolve()) if p.is_absolute() else str((_PROJECT_ROOT / p).resolve())
+
+DATA_DIR = _resolve_path(_get("DATA_DIR", "data"))
+DB_PATH = _resolve_path(_get("DB_PATH", "storage/sqlite.db"))
+CHROMA_PATH = _resolve_path(_get("CHROMA_PATH", "storage/chroma"))
 
 # ── Models ─────────────────────────────────────────────────────────
 EMBEDDING_MODEL = _get("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
